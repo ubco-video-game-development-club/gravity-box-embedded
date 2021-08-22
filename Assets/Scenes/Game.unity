@@ -588,7 +588,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   wallPrefab: {fileID: 8572464170756795386, guid: a5237c31459b62d43a48b4b2cf24ee30, type: 3}
-  edgeWidth: 0.04
+  wallBackgroundPrefab: {fileID: 7255728802659278787, guid: c78da679fdf73b648a3116f00d806bbb, type: 3}
+  edgeWidth: 0.1
+  edgeDist: 0.9
 --- !u!1 &184463643
 GameObject:
   m_ObjectHideFlags: 0
@@ -1476,7 +1478,7 @@ MonoBehaviour:
   playerBody: {fileID: 1244791586}
   rocketPrefab: {fileID: 3300008257071561678, guid: 6dba117d98c766c41b2a7b154f76101d, type: 3}
   rocketCooldown: 0.5
-  recoilStrength: 3
+  recoilStrength: 10
   onShoot:
     m_PersistentCalls:
       m_Calls:
