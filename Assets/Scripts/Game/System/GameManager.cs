@@ -14,17 +14,13 @@ public class GameManager : MonoBehaviour
 
     void Awake() 
     {
-        //Enfore singleton
         if(singleton != null) 
         {
             Destroy(gameObject);
             return;
         }
-
-        //Initialize singleton
         singleton = this;
 
-        //Initialize systems
         scoreSystem = GetComponent<ScoreSystem>();
         waveSystem = GetComponent<WaveSystem>();
     }
