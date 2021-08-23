@@ -8,64 +8,19 @@ public class WaveSystem : MonoBehaviour
     [SerializeField] private Transform spawnPointPrefab;
     [SerializeField] private float spawnEdgeOffset;
     [SerializeField] private Enemy enemyPrefab;
-    [SerializeField] private float baseSpawnInterval = 2f;
-    [SerializeField] private float spawnIntervalDecrement = 0.05f;
-    [SerializeField] private float baseSpawnCount = 1.5f;
-    [SerializeField] private float spawnCountIncrement = 0.5f;
-    [SerializeField] private int startDelay = 3;
-    [SerializeField] private int waveCutoffDuration = 3;
+    [SerializeField] private float minSpawnDelay = 2f;
+    [SerializeField] private float maxSpawnDelay = 5f;
 
-    public int WaveTimer
-    {
-        get { return _waveTimer; }
-        set
-        {
-            _waveTimer = value;
-            if (_waveTimer == 0)
-            {
-                StartCoroutine(SpawnWave());
-            }
-
-            if (tickCoroutine != null)
-            {
-                StopCoroutine(tickCoroutine);
-            }
-            if (_waveTimer > 0)
-            {
-                tickCoroutine = StartCoroutine(TickWaveTimer());
-            }
-        }
-    }
-    private int _waveTimer;
-
-    private Transform[] spawnPoints = new Transform[4];
-
-    private float spawnInterval = 0;
-    private int spawnCount = 0;
-    private float rawSpawnCount = 0;
-    private int enemiesRemaining = 0;
-
-    private YieldInstruction spawnInstruction;
-    private YieldInstruction tickInstruction;
-    private Coroutine tickCoroutine;
-
-    void Awake()
-    {
-        spawnInterval = baseSpawnInterval;
-        rawSpawnCount = baseSpawnCount;
-        spawnInstruction = new WaitForSeconds(spawnInterval);
-        spawnCount = Mathf.FloorToInt(rawSpawnCount);
-        tickInstruction = new WaitForSeconds(1);
-
-        for (int i = 0; i < 4; i++)
-        {
-            spawnPoints[i] = Instantiate(spawnPointPrefab);
-        }
-    }
+    private Transform[] spawnPoints = new Transform[6];
+    private int spawnIndex = 0;
 
     void Start()
     {
-        WaveTimer = startDelay;
+        for (int i = 0; i < spawnPoints.Length; i++)
+        {
+            spawnPoints[i] = Instantiate(spawnPointPrefab);
+            StartCoroutine(SpawnEnemy());
+        }
     }
 
     void Update()
@@ -73,48 +28,21 @@ public class WaveSystem : MonoBehaviour
         UpdateSpawnPoints();
     }
 
-    public void RemoveEnemy()
+    private void RespawnEnemy()
     {
-        enemiesRemaining--;
-        if (enemiesRemaining <= 0)
-        {
-            WaveTimer = waveCutoffDuration;
-        }
+        StartCoroutine(SpawnEnemy());
     }
 
-    private IEnumerator TickWaveTimer()
+    private IEnumerator SpawnEnemy()
     {
-        yield return new WaitForSeconds(1);
-        WaveTimer--;
-    }
+        float spawnDelay = Random.Range(minSpawnDelay, maxSpawnDelay);
+        yield return new WaitForSeconds(spawnDelay);
 
-    private IEnumerator SpawnWave()
-    {
-        enemiesRemaining += 4 * spawnCount;
+        Transform spawnPoint = spawnPoints[spawnIndex];
+        spawnIndex = (spawnIndex + 1) % spawnPoints.Length;
 
-        for (int i = 0; i < spawnCount; i++)
-        {
-            foreach (Transform spawnPoint in spawnPoints)
-            {
-                Enemy enemy = Instantiate(enemyPrefab, spawnPoint.position, Quaternion.identity);
-                enemy.AddDeathListener(RemoveEnemy);
-            }
-
-            yield return spawnInstruction;
-        }
-
-        UpdateWave();
-    }
-
-    private void UpdateWave()
-    {
-        // Increase difficulty
-        spawnInterval = Mathf.Clamp(spawnInterval - spawnIntervalDecrement, 0.1f, baseSpawnInterval);
-        rawSpawnCount += spawnCountIncrement;
-
-        // Update wave data
-        spawnInstruction = new WaitForSeconds(spawnInterval);
-        spawnCount = Mathf.FloorToInt(rawSpawnCount);
+        Enemy enemy = Instantiate(enemyPrefab, spawnPoint.position, Quaternion.identity);
+        enemy.AddDeathListener(RespawnEnemy);
     }
 
     private void UpdateSpawnPoints()
@@ -123,9 +51,13 @@ public class WaveSystem : MonoBehaviour
         Vector2 topRight = Camera.main.ScreenToWorldPoint(new Vector2(Screen.width, Screen.height));
         Vector2 bottomLeft = Camera.main.ScreenToWorldPoint(new Vector2(0, 0));
         Vector2 bottomRight = Camera.main.ScreenToWorldPoint(new Vector2(Screen.width, 0));
+        Vector2 topMiddle = Camera.main.ScreenToWorldPoint(new Vector2(Screen.width / 2f, Screen.height));
+        Vector2 bottomMiddle = Camera.main.ScreenToWorldPoint(new Vector2(Screen.width / 2f, 0));
         spawnPoints[0].position = topLeft + new Vector2(spawnEdgeOffset, -spawnEdgeOffset);
         spawnPoints[1].position = topRight + new Vector2(-spawnEdgeOffset, -spawnEdgeOffset);
         spawnPoints[2].position = bottomLeft + new Vector2(spawnEdgeOffset, spawnEdgeOffset);
         spawnPoints[3].position = bottomRight + new Vector2(-spawnEdgeOffset, spawnEdgeOffset);
+        spawnPoints[4].position = topMiddle + new Vector2(0, -spawnEdgeOffset);
+        spawnPoints[5].position = bottomMiddle + new Vector2(0, spawnEdgeOffset);
     }
 }

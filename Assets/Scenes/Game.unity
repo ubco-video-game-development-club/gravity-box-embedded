@@ -539,12 +539,8 @@ MonoBehaviour:
   spawnPointPrefab: {fileID: 1296794252293650154, guid: a5d41ec8dfd45b2408ca2200cd9f32ab, type: 3}
   spawnEdgeOffset: 2
   enemyPrefab: {fileID: 775320830027528938, guid: c8b65d39740b8c04fb52613f12308ff2, type: 3}
-  baseSpawnInterval: 0
-  spawnIntervalDecrement: 0
-  baseSpawnCount: 1
-  spawnCountIncrement: 0
-  startDelay: 3
-  waveCutoffDuration: 3
+  minSpawnDelay: 3
+  maxSpawnDelay: 8
 --- !u!1 &356655522
 GameObject:
   m_ObjectHideFlags: 0

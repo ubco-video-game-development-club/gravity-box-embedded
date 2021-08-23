@@ -37,6 +37,8 @@ public class Enemy : MonoBehaviour
 
     void OnBecameInvisible()
     {
+        if (gameObject == null || healthBar == null) return;
+
         onDeath.Invoke();
         Destroy(healthBar.gameObject);
         Destroy(gameObject);
