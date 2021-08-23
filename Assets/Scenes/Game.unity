@@ -542,19 +542,12 @@ MonoBehaviour:
   - {fileID: 897856906}
   - {fileID: 2035843430}
   enemyPrefab: {fileID: 775320830027528938, guid: c8b65d39740b8c04fb52613f12308ff2, type: 3}
-  baseSpawnInterval: 5
-  spawnIntervalDecrement: 0.25
-  baseSpawnCount: 1.5
-  spawnCountIncrement: 0.25
-  maxWaveDuration: 30
+  baseSpawnInterval: 0
+  spawnIntervalDecrement: 0
+  baseSpawnCount: 1
+  spawnCountIncrement: 0
   startDelay: 3
   waveCutoffDuration: 3
-  onTimerChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  onWaveCountChanged:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!1 &356655522
 GameObject:
   m_ObjectHideFlags: 0

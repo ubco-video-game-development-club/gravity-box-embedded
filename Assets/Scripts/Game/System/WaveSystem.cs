@@ -5,54 +5,39 @@ using UnityEngine.Events;
 
 public class WaveSystem : MonoBehaviour
 {
-    [System.Serializable] public class OnTimerChangedEvent : UnityEvent<int> { }
-    [System.Serializable] public class OnWaveCountChangedEvent : UnityEvent<int> { }
-
     [SerializeField] private Transform[] spawnPoints;
     [SerializeField] private Enemy enemyPrefab;
     [SerializeField] private float baseSpawnInterval = 2f;
     [SerializeField] private float spawnIntervalDecrement = 0.05f;
     [SerializeField] private float baseSpawnCount = 1.5f;
     [SerializeField] private float spawnCountIncrement = 0.5f;
-    [SerializeField] private int maxWaveDuration = 30;
     [SerializeField] private int startDelay = 3;
     [SerializeField] private int waveCutoffDuration = 3;
-    [SerializeField] private OnTimerChangedEvent onTimerChanged = new OnTimerChangedEvent();
-    [SerializeField] private OnWaveCountChangedEvent onWaveCountChanged = new OnWaveCountChangedEvent();
 
     public int WaveTimer
     {
         get { return _waveTimer; }
         set
         {
+            Debug.Log("Wave timer set to " + value);
+
             _waveTimer = value;
-            if (_waveTimer <= 0)
+            if (_waveTimer == 0)
             {
                 StartCoroutine(SpawnWave());
-                _waveTimer = maxWaveDuration;
             }
-
-            onTimerChanged.Invoke(_waveTimer);
 
             if (tickCoroutine != null)
             {
                 StopCoroutine(tickCoroutine);
             }
-            tickCoroutine = StartCoroutine(TickWaveTimer());
+            if (_waveTimer > 0)
+            {
+                tickCoroutine = StartCoroutine(TickWaveTimer());
+            }
         }
     }
     private int _waveTimer;
-
-    public int WaveCount
-    {
-        get { return _waveCount; }
-        set
-        {
-            _waveCount = value;
-            onWaveCountChanged.Invoke(_waveCount);
-        }
-    }
-    private int _waveCount;
 
     private float spawnInterval = 0;
     private int spawnCount = 0;
@@ -74,14 +59,13 @@ public class WaveSystem : MonoBehaviour
 
     void Start()
     {
-        WaveCount = 0;
         WaveTimer = startDelay;
     }
 
     public void RemoveEnemy()
     {
         enemiesRemaining--;
-        if (enemiesRemaining <= 0 && WaveTimer > waveCutoffDuration)
+        if (enemiesRemaining <= 0)
         {
             WaveTimer = waveCutoffDuration;
         }
@@ -95,7 +79,6 @@ public class WaveSystem : MonoBehaviour
 
     private IEnumerator SpawnWave()
     {
-        WaveCount++;
         enemiesRemaining += 4 * spawnCount;
 
         for (int i = 0; i < spawnCount; i++)
@@ -121,25 +104,5 @@ public class WaveSystem : MonoBehaviour
         // Update wave data
         spawnInstruction = new WaitForSeconds(spawnInterval);
         spawnCount = Mathf.FloorToInt(rawSpawnCount);
-    }
-
-    public void AddTimerChangedListener(UnityAction<int> call) 
-    {
-        onTimerChanged.AddListener(call);
-    }
-
-    public void RemoveTimerChangedListener(UnityAction<int> call) 
-    {
-        onTimerChanged.RemoveListener(call);
-    }
-
-    public void AddWaveCountChangedListener(UnityAction<int> call) 
-    {
-        onWaveCountChanged.AddListener(call);
-    }
-
-    public void RemoveWWaveCountChangedListener(UnityAction<int> call) 
-    {
-        onWaveCountChanged.RemoveListener(call);
     }
 }
