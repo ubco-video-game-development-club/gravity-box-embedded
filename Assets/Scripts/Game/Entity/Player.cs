@@ -63,6 +63,6 @@ public class Player : MonoBehaviour
 
     public void ApplyKnockback(Vector2 knockbackForce)
     {
-        rigidbody2D.AddForce(knockbackForce);
+        rigidbody2D.AddForce(knockbackForce, ForceMode2D.Impulse);
     }
 }

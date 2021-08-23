@@ -7,6 +7,7 @@ public class TriangleEnemy : Enemy
 {
     [SerializeField] private float launchForce = 5.0f;
     [SerializeField] private float constantVelocity = 10.0f;
+    [SerializeField] private float knockbackForce = 10.0f;
     [SerializeField] private int damage = 1;
     [SerializeField] private GameObject deathParticles;
     private Rigidbody2D rig;
@@ -21,7 +22,7 @@ public class TriangleEnemy : Enemy
     void Start()
     {
         GameObject player = GameObject.FindGameObjectWithTag("Player");
-        if(player == null)
+        if (player == null)
         {
             Debug.LogWarning("Object with tag \"Player\" not found.");
             return;
@@ -38,12 +39,15 @@ public class TriangleEnemy : Enemy
         rig.velocity = direction * constantVelocity;
         transform.rotation = Quaternion.FromToRotation(Vector2.up, direction);
     }
-    
+
     void OnCollisionEnter2D(Collision2D col)
     {
-        if(col.transform.TryGetComponent<Player>(out Player player))
+        if (col.transform.TryGetComponent<Player>(out Player player))
         {
             player.TakeDamage(damage);
+
+            Vector2 toPlayer = (player.transform.position - this.transform.position).normalized;
+            player.ApplyKnockback(toPlayer * knockbackForce);
         }
     }
 
