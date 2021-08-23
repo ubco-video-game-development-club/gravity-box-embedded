@@ -5,7 +5,8 @@ using UnityEngine.Events;
 
 public class WaveSystem : MonoBehaviour
 {
-    [SerializeField] private Transform[] spawnPoints;
+    [SerializeField] private Transform spawnPointPrefab;
+    [SerializeField] private float spawnEdgeOffset;
     [SerializeField] private Enemy enemyPrefab;
     [SerializeField] private float baseSpawnInterval = 2f;
     [SerializeField] private float spawnIntervalDecrement = 0.05f;
@@ -19,8 +20,6 @@ public class WaveSystem : MonoBehaviour
         get { return _waveTimer; }
         set
         {
-            Debug.Log("Wave timer set to " + value);
-
             _waveTimer = value;
             if (_waveTimer == 0)
             {
@@ -39,6 +38,8 @@ public class WaveSystem : MonoBehaviour
     }
     private int _waveTimer;
 
+    private Transform[] spawnPoints = new Transform[4];
+
     private float spawnInterval = 0;
     private int spawnCount = 0;
     private float rawSpawnCount = 0;
@@ -55,11 +56,21 @@ public class WaveSystem : MonoBehaviour
         spawnInstruction = new WaitForSeconds(spawnInterval);
         spawnCount = Mathf.FloorToInt(rawSpawnCount);
         tickInstruction = new WaitForSeconds(1);
+
+        for (int i = 0; i < 4; i++)
+        {
+            spawnPoints[i] = Instantiate(spawnPointPrefab);
+        }
     }
 
     void Start()
     {
         WaveTimer = startDelay;
+    }
+
+    void Update()
+    {
+        UpdateSpawnPoints();
     }
 
     public void RemoveEnemy()
@@ -104,5 +115,17 @@ public class WaveSystem : MonoBehaviour
         // Update wave data
         spawnInstruction = new WaitForSeconds(spawnInterval);
         spawnCount = Mathf.FloorToInt(rawSpawnCount);
+    }
+
+    private void UpdateSpawnPoints()
+    {
+        Vector2 topLeft = Camera.main.ScreenToWorldPoint(new Vector2(0, Screen.height));
+        Vector2 topRight = Camera.main.ScreenToWorldPoint(new Vector2(Screen.width, Screen.height));
+        Vector2 bottomLeft = Camera.main.ScreenToWorldPoint(new Vector2(0, 0));
+        Vector2 bottomRight = Camera.main.ScreenToWorldPoint(new Vector2(Screen.width, 0));
+        spawnPoints[0].position = topLeft + new Vector2(spawnEdgeOffset, -spawnEdgeOffset);
+        spawnPoints[1].position = topRight + new Vector2(-spawnEdgeOffset, -spawnEdgeOffset);
+        spawnPoints[2].position = bottomLeft + new Vector2(spawnEdgeOffset, spawnEdgeOffset);
+        spawnPoints[3].position = bottomRight + new Vector2(-spawnEdgeOffset, spawnEdgeOffset);
     }
 }
