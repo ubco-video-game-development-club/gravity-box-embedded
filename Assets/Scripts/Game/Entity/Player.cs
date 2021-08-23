@@ -30,6 +30,12 @@ public class Player : MonoBehaviour
         currentHealth = maxHealth;
     }
 
+    void OnBecameInvisible()
+    {
+        if (!flickerRenderers[0].enabled) return;
+        transform.position = Vector2.zero;
+    }
+
     public void TakeDamage(int damage)
     {
         //If invincible or dead, don't take damage
@@ -54,10 +60,10 @@ public class Player : MonoBehaviour
     {
         isInvincible = true;
 
-        for(int i = 0; i < numFlickers; i++)
+        for (int i = 0; i < numFlickers; i++)
         {
             yield return invincibilityFrameInstruction;
-            foreach(SpriteRenderer r in flickerRenderers)
+            foreach (SpriteRenderer r in flickerRenderers)
             {
                 r.enabled = !r.enabled;
             }
@@ -68,9 +74,9 @@ public class Player : MonoBehaviour
         //This is to ensure that the renderer is always enabled at the end of this function
         //The wait time is so the flicker won't look weird
         yield return invincibilityFrameInstruction;
-        foreach(SpriteRenderer r in flickerRenderers)
+        foreach (SpriteRenderer r in flickerRenderers)
         {
-                r.enabled = true;
+            r.enabled = true;
         }
     }
 
@@ -79,22 +85,22 @@ public class Player : MonoBehaviour
         rigidbody2D.AddForce(knockbackForce);
     }
 
-    public void AddHealthChangedListener(UnityAction<int> call) 
+    public void AddHealthChangedListener(UnityAction<int> call)
     {
         onHealthChanged.AddListener(call);
     }
 
-    public void RemoveHealthChangedListener(UnityAction<int> call) 
+    public void RemoveHealthChangedListener(UnityAction<int> call)
     {
         onHealthChanged.RemoveListener(call);
     }
 
-    public void AddDeathListener(UnityAction call) 
+    public void AddDeathListener(UnityAction call)
     {
         onDeath.AddListener(call);
     }
 
-    public void RemoveDeathListener(UnityAction call) 
+    public void RemoveDeathListener(UnityAction call)
     {
         onDeath.RemoveListener(call);
     }

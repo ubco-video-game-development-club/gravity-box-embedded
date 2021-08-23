@@ -35,6 +35,13 @@ public class Enemy : MonoBehaviour
         healthBar.transform.position = transform.position + Vector3.up * healthBarYOffset;
     }
 
+    void OnBecameInvisible()
+    {
+        onDeath.Invoke();
+        Destroy(healthBar.gameObject);
+        Destroy(gameObject);
+    }
+
     public void TakeDamage(float damage)
     {
         if(damage < 0f) return; //Can't to negative damage
